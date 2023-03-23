@@ -5,10 +5,10 @@ import requests from '../../utils/requests'
 import { Movie } from '../../typings'
 
 
-console.log(requests.fetchNetflixOriginals)
+console.log(requests)
 
-interface Props {
-  netflixOriginals: Movie[]
+interface props {
+  netflixOriginals: Movie[] 
   trendingNow: Movie[]
   topRated: Movie[]
   actionMovies: Movie[]
@@ -20,14 +20,21 @@ interface Props {
 
 
 
-function Home({topRated}: Props) {
+const Home = ({netflixOriginals,
+  actionMovies,
+  comedyMovies,
+  documentaries,
+  horrorMovies,
+  romanceMovies,
+  topRated,
+  trendingNow,}: props) => {
 
-    console.log(topRated)
+    console.log(netflixOriginals)
   
 
 
   return (
-    <>
+    
       <div className='relative h-screen bg-gradient-to-b from-gray-900/10
       to-[#010511] lg:h-[140vh]'>
         <Head>
@@ -37,8 +44,8 @@ function Home({topRated}: Props) {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <Header />
-        <main>
-          <Banner />
+        <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
+          <Banner netflixOriginals={netflixOriginals}/>
           <section>
             { }
             { }
@@ -50,11 +57,11 @@ function Home({topRated}: Props) {
         </main>
         { }
       </div>
-    </>
+    
   )
 }
 
-export const getserverSideProps = async() => {
+export const getServerSideProps  = async() => {
   
   const [
     netflixOriginals,
@@ -78,8 +85,10 @@ export const getserverSideProps = async() => {
 
   
 
+  
+
   return {
-    Props: {
+    props: {
       netflixOriginals: netflixOriginals.results,
       trendingNow: trendingNow.results,
       topRated: topRated.results,
@@ -91,8 +100,6 @@ export const getserverSideProps = async() => {
     }
   }
 }
-
-getserverSideProps()
 
 
 export default Home

@@ -1,9 +1,13 @@
 import Head from 'next/head'
+import { useRecoilValue } from 'recoil';
 import Header from '../../components/Header'
 import Banner from '../../components/Banner'
 import requests from '../../utils/requests'
 import { Movie } from '../../typings'
 import Row from '../../components/Row'
+import useAuth from '../../hooks/useAuth'
+import { modalState } from '../../atoms/modalAtoms';
+import Modal from '../../components/Modal';
 
 
 
@@ -29,6 +33,11 @@ const Home = ({netflixOriginals,
   topRated,
   trendingNow,}: props) => {
 
+    const {logout, loading} = useAuth()
+
+    const showModal = useRecoilValue(modalState)
+
+    if (loading) return null
   
 
 
@@ -56,7 +65,8 @@ const Home = ({netflixOriginals,
           <Row title="Documentaries" movies={documentaries} />
           </section>
         </main>
-        { }
+        {showModal && <Modal/> }
+        
       </div>
     
   )

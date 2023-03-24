@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState,useEffect } from "react"
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs"
 import { Movie } from "../typings"
 import Thumbnail from "./Thumbnail"
@@ -15,10 +15,10 @@ function Row({ title, movies }: props) {
     const rowRef = useRef<HTMLDivElement>(null)
   const [isMoved, setIsMoved] = useState(false)
   
-
+  
   const handleClick = (direction: string) => {
     setIsMoved(true)
-    if (rowRef.current) {
+    if (rowRef.current != null) {
       const { scrollLeft, clientWidth } = rowRef.current
 
       const scrollTo =
@@ -26,7 +26,12 @@ function Row({ title, movies }: props) {
           ? scrollLeft - clientWidth
           : scrollLeft + clientWidth
       rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' })
+
+      
     }
+
+
+    
   }
 
 
@@ -36,7 +41,8 @@ function Row({ title, movies }: props) {
             <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#e5e5e5] transition 
             duration-200 hover:text-white md:text-2xl">
                 {title}</h2>
-            <div className="group relative md:-ml-2">
+            <div className="group relative md:-ml-2"
+            >
                 <BsChevronLeft className={`absolute top-0 
                 bottom-0 left-2 z-40 m-auto h-9 w-9 cursor-pointer
                   opacity-0 transition hover:scale-125 
@@ -46,7 +52,8 @@ function Row({ title, movies }: props) {
 
                 <div className="flex items-center 
                 space-x-0.5 overflow-x-scroll
-                md:space-x-2.5 md:p-2 scrollbar-hide">
+                md:space-x-2.5 md:p-2 scrollbar-hide"
+                ref={rowRef}>
                     {movies.map((movie) => (
                         <Thumbnail key={movie.id} movie={movie} />
                     ))}

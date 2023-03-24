@@ -1,5 +1,7 @@
 import { Movie } from "../typings"
 import Image from "next/image"
+import { modalState, movieState } from "../atoms/modalAtoms"
+import { useRecoilState } from 'recoil';
 
 interface props {
     //movie: Movie | DocumentData
@@ -8,6 +10,9 @@ interface props {
 
 
 function Thumbnail({movie}: props) {
+  
+  const [showModal, setShowModal] = useRecoilState(modalState)
+  const [currentMovie, setCurrentMovie] = useRecoilState(movieState)
     return (
         <div
       className={`relative h-28 
@@ -16,6 +21,10 @@ function Thumbnail({movie}: props) {
       ease-out md:h-36 
       md:min-w-[260px] 
       md:hover:scale-105`}
+      onClick={() => {
+        setCurrentMovie(movie)
+        setShowModal(true)
+      }}
       
     >
       <Image

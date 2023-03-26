@@ -1,3 +1,4 @@
+import { DocumentData } from "firebase/firestore"
 import { useRef, useState,useEffect } from "react"
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs"
 import { Movie } from "../typings"
@@ -9,12 +10,10 @@ interface props {
     //movie: Movie | DocumentData[]
 }
 
-
 function Row({ title, movies }: props) {
 
     const rowRef = useRef<HTMLDivElement>(null)
   const [isMoved, setIsMoved] = useState(false)
-  
   
   const handleClick = (direction: string) => {
     setIsMoved(true)
@@ -26,16 +25,8 @@ function Row({ title, movies }: props) {
           ? scrollLeft - clientWidth
           : scrollLeft + clientWidth
       rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' })
-
-      
     }
-
-
-    
   }
-
-
-
     return (
         <div className="h-40 space-y-0.5 md:space-y-2">
             <h2 className="w-56 cursor-pointer text-sm font-semibold text-[#e5e5e5] transition 

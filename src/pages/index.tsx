@@ -8,6 +8,11 @@ import Row from '../../components/Row'
 import useAuth from '../../hooks/useAuth'
 import { modalState } from '../../atoms/modalAtoms';
 import Modal from '../../components/Modal';
+import Plans from '../../components/Plans';
+import { getProducts, Product } from '@stripe/firestore-stripe-payments';
+import payments from '../../lib/stripe';
+import useSubscription from '../../hooks/useSubscription';
+import useList from '../../hooks/useList';
 
 
 
@@ -20,6 +25,7 @@ interface props {
   horrorMovies: Movie[]
   romanceMovies: Movie[]
   documentaries: Movie[]
+  products:Product[]
 }
 
 
@@ -31,13 +37,19 @@ const Home = ({netflixOriginals,
   horrorMovies,
   romanceMovies,
   topRated,
-  trendingNow,}: props) => {
+  trendingNow,
+  products}: props) => {
 
-    const {logout, loading} = useAuth()
-
+    const {loading, user} = useAuth()
     const showModal = useRecoilValue(modalState)
+    const subscription = useSubscription(user)
+    const list = useList(user?.uid)
 
-    if (loading) return null
+
+    if (loading || subscription === null) return null
+
+    if (!subscription) return <Plans products={products}/>
+
   
 
 
@@ -58,7 +70,8 @@ const Home = ({netflixOriginals,
           <Row title="Trending Now" movies={trendingNow} />
           <Row title="Top Rated" movies={topRated} />
           <Row title="Action Thrillers" movies={actionMovies} />
-          {/* My List */}
+          {/* My List {list.length > 0 && <Row title="My List" movies={list} />} */}
+          
           <Row title="Comedies" movies={comedyMovies} />
           <Row title="Scary Movies" movies={horrorMovies} />
           <Row title="Romance Movies" movies={romanceMovies} />
@@ -73,6 +86,11 @@ const Home = ({netflixOriginals,
 }
 
 export const getServerSideProps  = async() => {
+
+  const products = await getProducts(payments, {
+    includePrices: true,
+    activeOnly: true,
+  }).then((res) => res).catch((error) =>console.log(error.message));
   
   const [
     netflixOriginals,
@@ -108,6 +126,7 @@ export const getServerSideProps  = async() => {
       horrorMovies: horrorMovies.results,
       romanceMovies: romanceMovies.results,
       documentaries: documentaries.results,
+      products,
     }
   }
 }

@@ -43,6 +43,9 @@
     bg-[#2a2a2a]/60 transition 
     hover:border-white hover:bg-white/10;
   }
+  .membershipLink {
+    @apply cursor-pointer text-blue-500 hover:underline;
+  }
 
   .planBox {
     @apply relative mx-1.5 
@@ -68,5 +71,11 @@
 
   .tableDataFeature {
     @apply w-[calc(100%/3)] p-2.5 text-center md:w-[calc(60%/3)] md:p-3.5;
+  }
+
+  .planEdits {
+    @apply mt-6 grid grid-cols-1 gap-x-4 border px-4 py-4
+    md:grid-cols-4 md:border-x-0 md:border-t md:border-b-0 md:px-0
+    md:pb-0 
   }
 }

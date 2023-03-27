@@ -6,8 +6,7 @@ import Thumbnail from "./Thumbnail"
 
 interface props {
     title: string
-    movies: Movie[]
-    //movie: Movie | DocumentData[]
+    movies: Movie[] | DocumentData[]
 }
 
 function Row({ title, movies }: props) {
@@ -45,8 +44,8 @@ function Row({ title, movies }: props) {
                 space-x-0.5 overflow-x-scroll
                 md:space-x-2.5 md:p-2 scrollbar-hide"
                 ref={rowRef}>
-                    {movies.map((movie) => (
-                        <Thumbnail key={movie.id} movie={movie} />
+                    {movies.map((movies) => (
+                        <Thumbnail key={movies.id} movie={movies} />
                     ))}
 
                 </div>

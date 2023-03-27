@@ -60,7 +60,7 @@ function Plans({ products }: Props) {
                 <ul>
                     <li className="flex items-center gap-x-2 text-lg">
                         <BsCheck className="h-7 w-7 text-[#e50914]" />
-                        Watch all youi want. Ad-free.
+                        Watch all you want. Ad-free.
                     </li>
                     <li className="flex items-center gap-x-2 text-lg">
                         <BsCheck className="h-7 w-7 text-[#e50914]" />

@@ -1,20 +1,40 @@
 import MuiModal from '@mui/material/Modal'
 import { useEffect, useState } from 'react';
-import { BsFillPlayFill, BsHandThumbsUp, BsPlay, BsPlus, BsVolumeOff, BsVolumeUp, BsX } from 'react-icons/bs';
-import { AiOutlinePlus } from 'react-icons/ai';
+import { BsCheckCircle, BsFillPlayFill, BsHandThumbsUp, BsPlay, BsPlus, BsVolumeOff, BsVolumeUp, BsX } from 'react-icons/bs';
+import { AiOutlineCheck, AiOutlinePlus } from 'react-icons/ai';
 import ReactPlayer from 'react-player';
 import { useRecoilState } from 'recoil';
 import { modalState, movieState } from '../atoms/modalAtoms';
-import { Element, Genre } from '../typings';
+import toast, {Toaster} from 'react-hot-toast'
+import { Element, Genre, Movie } from '../typings';
+import { collection, deleteDoc, doc, DocumentData, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+import useAuth from '../hooks/useAuth';
 
 
 function Modal() {
 
-    const [showModal, setShowModal] = useRecoilState(modalState)
     const [movie, setMovie] = useRecoilState(movieState)
-    const [trailer, setTrailer] = useState("")
-    const [genres, setGenres] = useState<Genre[]>([])
+    const [trailer, setTrailer] = useState('')
+    const [showModal, setShowModal] = useRecoilState(modalState)
     const [muted, setMuted] = useState(false)
+    const [genres, setGenres] = useState<Genre[]>([])
+    const [addedToList, setAddedToList] = useState(false)
+    const { user } = useAuth()
+    const [movies, setMovies] = useState<DocumentData[] | Movie[]>([])
+
+    console.log(movies)
+
+    
+  const toastStyle = {
+    background: 'white',
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: '16px',
+    padding: '15px',
+    borderRadius: '9999px',
+    maxWidth: '1000px',
+  }
 
 
 
@@ -48,12 +68,63 @@ function Modal() {
         setShowModal(false)
     }
 
+    // Find all the movies in the user's list
+  useEffect(() => {
+    if (user) {
+      return onSnapshot(
+        collection(db, 'customers', user.uid, 'myList'),
+        (snapshot) => setMovies(snapshot.docs)
+      )
+    }
+  }, [db, movie?.id])
+
+  // Check if the movie is already in the user's list
+  useEffect(
+    () =>
+      setAddedToList(
+        movies!.findIndex((result) => result.data().id === movie?.id) !== -1
+      ),
+    [movies]
+  )
+
+    const handleList = async () => {
+        if (addedToList) {
+          await deleteDoc(
+            doc(db, 'customers', user!.uid, 'myList', movie?.id.toString()!)
+          )
+    
+          toast(
+            `${movie?.title || movie?.original_name} has been removed from My List`,
+            {
+              duration: 8000,
+              style: toastStyle
+            }
+          )
+        } else {
+          await setDoc(
+            doc(db, 'customers', user!.uid, 'myList', movie?.id.toString()),
+            {
+              ...movie,
+            }
+          )
+    
+          toast(
+            `${movie?.title || movie?.original_name} has been added to My List.`,
+            {
+              duration: 8000,
+              style:toastStyle
+            }
+          )
+        }
+      }
+
 
 
     return <MuiModal open={showModal} className="fixed !top-7 left-0
     z-50 mx-auto w-full max-w-5xl overflow-hidden overflow-y-scroll rounded-md scrollbar-hide"
         onClose={handleClose}>
         <>
+            <Toaster position='bottom-center'/>
             <button onClick={handleClose} className="
             modalButton 
             absolute right-5 top-5 !z-40
@@ -76,8 +147,14 @@ function Modal() {
                 font-bold text-black transition hover:bg-[#e6e6e6]'>
                             <BsFillPlayFill className='h-7 w-7 text-black' />
                             Play</button>
-                        <button className='modalButton mx-2'>
-                            <AiOutlinePlus className='h-7 w-7' />
+                        <button className='modalButton mx-2' onClick={handleList}>
+                            {addedToList
+                                ? (
+                                    <AiOutlineCheck className='h-7 w-7' />
+                                ) : (
+                                    <AiOutlinePlus className='h-7 w-7' />
+                                )}
+
                         </button>
 
                         <button className='modalButton mx-2'>
@@ -114,12 +191,12 @@ function Modal() {
                                 {genres.map((genre) => genre.name).join(', ')}
                             </div>
                             <div>
-                            <span className='text-[gray]'>Original language:</span> {' '}
+                                <span className='text-[gray]'>Original language:</span> {' '}
                                 {movie?.original_language}
                             </div>
                             <div>
-                            <span className='text-[gray]'>Original language:</span> {' '}
-                            {movie?.vote_count}
+                                <span className='text-[gray]'>Original language:</span> {' '}
+                                {movie?.vote_count}
                             </div>
                         </div>
                     </div>

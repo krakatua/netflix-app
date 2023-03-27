@@ -23,7 +23,6 @@ function Modal() {
     const { user } = useAuth()
     const [movies, setMovies] = useState<DocumentData[] | Movie[]>([])
 
-    console.log(movies)
 
     
   const toastStyle = {
@@ -46,7 +45,7 @@ function Modal() {
                 }/${movie?.id}?api_key=${process.env.NEXT_PUBLIC_API_KEY
                 }&language=en-US&append_to_response=videos`)
                 .then((response) => response.json())
-                .catch(err => console.log(err.message))
+                .catch(err => (err.message))
 
 
             if (data?.videos) {
